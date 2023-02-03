@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mapd722_patient_clinical_data_app/models/patient.dart';
 import 'package:mapd722_patient_clinical_data_app/services/api_service.dart';
+import 'package:validatorless/validatorless.dart';
 
 enum Gender { male, female }
 
@@ -26,31 +27,6 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
   final _addressController = TextEditingController();
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
-
-  // @override
-  // void initState() {
-  //   id = widget.patient.id;
-  //   _nameController.text = widget.patient.name;
-  //   gender = widget.patient.gender;
-  //   if (widget.patient.gender == 'male') {
-  //     _gender = Gender.male;
-  //   } else {
-  //     _gender = Gender.female;
-  //   }
-  //   _ageController.text = widget.patient.age.toString();
-  //   _addressController.text = widget.patient.address;
-  //   _cityController.text = widget.patient.city;
-  //   _countryController.text = widget.patient.country;
-  //   status = widget.patient.status;
-  //   if (widget.patient.status == 'positive') {
-  //     _status = Status.positive;
-  //   } else if (widget.patient.status == 'dead') {
-  //     _status = Status.dead;
-  //   } else {
-  //     _status = Status.recovered;
-  //   }
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +54,12 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                                 decoration: const InputDecoration(
                                   labelText: 'First Name',
                                 ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter first name';
-                                  }
-                                  return null;
-                                },
+                                validator: Validatorless.multiple([
+                                  Validatorless.required(
+                                      'First Name is required'),
+                                  Validatorless.max(25,
+                                      'First Name must be at most 25 characters'),
+                                ]),
                                 onChanged: (value) {},
                               ),
                             ],
@@ -98,12 +74,12 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                                 decoration: const InputDecoration(
                                   labelText: 'Last Name',
                                 ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter last name';
-                                  }
-                                  return null;
-                                },
+                                validator: Validatorless.multiple([
+                                  Validatorless.required(
+                                      'Last Name is required'),
+                                  Validatorless.max(25,
+                                      'Last Name must be at most 25 characters'),
+                                ]),
                                 onChanged: (value) {},
                               ),
                             ],
@@ -119,47 +95,11 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                                   labelText: 'Age',
                                 ),
                                 keyboardType: TextInputType.number,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter age';
-                                  }
-                                  return null;
-                                },
+                                validator: Validatorless.multiple([
+                                  Validatorless.required('Age is required'),
+                                  Validatorless.number('Age must be a number'),
+                                ]),
                                 onChanged: (value) {},
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                          child: Column(
-                            children: <Widget>[
-                              const Text('Gender'),
-                              ListTile(
-                                title: const Text('Male'),
-                                leading: Radio(
-                                  value: Gender.male,
-                                  groupValue: _gender,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _gender = value!;
-                                      gender = 'male';
-                                    });
-                                  },
-                                ),
-                              ),
-                              ListTile(
-                                title: const Text('Female'),
-                                leading: Radio(
-                                  value: Gender.female,
-                                  groupValue: _gender,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _gender = value!;
-                                      gender = 'female';
-                                    });
-                                  },
-                                ),
                               ),
                             ],
                           ),
@@ -173,12 +113,11 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                                 decoration: const InputDecoration(
                                   labelText: 'Address',
                                 ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter address';
-                                  }
-                                  return null;
-                                },
+                                validator: Validatorless.multiple([
+                                  Validatorless.required('Address is required'),
+                                  Validatorless.max(25,
+                                      'Address must be at most 25 characters'),
+                                ]),
                                 onChanged: (value) {},
                               ),
                             ],
@@ -193,12 +132,12 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                                 decoration: const InputDecoration(
                                   labelText: 'Mobile',
                                 ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter mobile number';
-                                  }
-                                  return null;
-                                },
+                                validator: Validatorless.multiple([
+                                  Validatorless.required('Mobile is required'),
+                                  Validatorless.number('Mobile is not valid'),
+                                  Validatorless.min(10, 'Mobile is not valid'),
+                                  Validatorless.max(10, 'Mobile is not valid'),
+                                ]),
                                 onChanged: (value) {},
                               ),
                             ],
@@ -213,16 +152,59 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                                 decoration: const InputDecoration(
                                   labelText: 'Email',
                                 ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter email';
-                                  }
-                                  return null;
-                                },
+                                validator: Validatorless.multiple([
+                                  Validatorless.required('Email is required'),
+                                  Validatorless.email('Email is not valid'),
+                                ]),
                                 onChanged: (value) {},
                               ),
                             ],
                           ),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                                flex: 1,
+                                child: Text('Gender',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                                flex: 4,
+                                child: Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                        child: Row(children: [
+                                      Radio(
+                                        value: Gender.male,
+                                        groupValue: _gender,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _gender = value!;
+                                            gender = 'male';
+                                          });
+                                        },
+                                      ),
+                                      const Text('Male'),
+                                    ])),
+                                    Expanded(
+                                        child: Row(children: [
+                                      Radio(
+                                        value: Gender.female,
+                                        groupValue: _gender,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _gender = value!;
+                                            gender = 'female';
+                                          });
+                                        },
+                                      ),
+                                      const Text('Female'),
+                                    ])),
+                                  ],
+                                ))
+                          ],
                         ),
                         Container(
                           margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -248,7 +230,6 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                                 },
                                 child: const Text('Save',
                                     style: TextStyle(color: Colors.white)),
-                                // color: Colors.blue,
                               )
                             ],
                           ),

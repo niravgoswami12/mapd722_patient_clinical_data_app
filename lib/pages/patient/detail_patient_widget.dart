@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mapd722_patient_clinical_data_app/models/patient.dart';
-import 'package:mapd722_patient_clinical_data_app/pages/patient/add_patient_widget.dart';
 import 'package:mapd722_patient_clinical_data_app/pages/patient_record/patient_record.dart';
 import 'package:mapd722_patient_clinical_data_app/services/api_service.dart';
 
 class DetailWidget extends StatefulWidget {
-  DetailWidget(this.patient);
-
   final Patient patient;
+  DetailWidget(this.patient);
 
   @override
   _DetailWidgetState createState() => _DetailWidgetState();
@@ -146,7 +144,8 @@ class _DetailWidgetState extends State<DetailWidget> {
                               icon: const Icon(Icons.preview, size: 28),
                               label: const Text('View Patient Records'),
                               onPressed: () {
-                                _navigateToEditScreen(context, widget.patient);
+                                _navigateToPatientRecordScreen(
+                                    context, widget.patient);
                               },
                             ),
                           ],
@@ -159,10 +158,10 @@ class _DetailWidgetState extends State<DetailWidget> {
     );
   }
 
-  _navigateToEditScreen(BuildContext context, Patient patient) async {
-    final result = await Navigator.push(
+  _navigateToPatientRecordScreen(BuildContext context, Patient patient) async {
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => PatientRecordHomePage()),
+      MaterialPageRoute(builder: (context) => PatientRecordHomePage(patient)),
     );
   }
 

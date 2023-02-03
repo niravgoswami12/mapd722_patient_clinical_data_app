@@ -7,7 +7,7 @@ class Patient {
   final String address;
   final String mobile;
   final String email;
-  final String condition;
+  final String? condition;
 
   Patient(
       {this.id = "",
@@ -30,7 +30,7 @@ class Patient {
       address: json['address'] as String,
       mobile: json['mobile'] as String,
       email: json['email'] as String,
-      condition: json['condition'] as String,
+      condition: json['condition'] as String?,
     );
   }
 

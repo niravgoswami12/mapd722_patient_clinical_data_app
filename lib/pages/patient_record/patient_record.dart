@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:mapd722_patient_clinical_data_app/models/patient.dart';
+import 'package:mapd722_patient_clinical_data_app/models/patient_record.dart';
 import 'package:mapd722_patient_clinical_data_app/pages/patient_record/add_patient_record_widget.dart';
 import 'package:mapd722_patient_clinical_data_app/pages/patient_record/patient_record_list.dart';
 import 'package:mapd722_patient_clinical_data_app/services/api_service.dart';
 
 class PatientRecordHomePage extends StatefulWidget {
-  const PatientRecordHomePage({Key? key}) : super(key: key);
+  const PatientRecordHomePage(this.patient, {super.key});
+  final patient;
 
   @override
   _PatientRecordHomePageState createState() => _PatientRecordHomePageState();
@@ -14,7 +16,8 @@ class PatientRecordHomePage extends StatefulWidget {
 
 class _PatientRecordHomePageState extends State<PatientRecordHomePage> {
   final ApiService api = ApiService();
-  List<Patient> patientList = [];
+
+  List<PatientRecord> patientRecordList = [];
 
   @override
   void initState() {
@@ -24,9 +27,7 @@ class _PatientRecordHomePageState extends State<PatientRecordHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (patientList == null) {
-      patientList = <Patient>[];
-    }
+    patientRecordList ??= <PatientRecord>[];
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -42,8 +43,9 @@ class _PatientRecordHomePageState extends State<PatientRecordHomePage> {
       body: Center(child: FutureBuilder(
         // future: loadList(),
         builder: (context, snapshot) {
-          return patientList.length > 0
-              ? PatientRecordList(patient: patientList)
+          return patientRecordList.length > 0
+              ? PatientRecordList(
+                  patient: widget.patient, patientRecords: patientRecordList)
               : Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -77,19 +79,21 @@ class _PatientRecordHomePageState extends State<PatientRecordHomePage> {
   }
 
   Future loadList() {
-    Future<List<Patient>> futurePatient = api.getPatient();
-    futurePatient.then((patientList) {
+    Future<List<PatientRecord>> futurePatientRecords =
+        api.getPatientRecord(widget.patient.id);
+    futurePatientRecords.then((patientRecordList) {
       setState(() {
-        this.patientList = patientList;
+        this.patientRecordList = patientRecordList;
       });
     });
-    return futurePatient;
+    return futurePatientRecords;
   }
 
   _navigateToAddScreen(BuildContext context) async {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddPatientRecordWidget()),
+      MaterialPageRoute(
+          builder: (context) => AddPatientRecordWidget(widget.patient)),
     ).then((value) => {});
   }
 }

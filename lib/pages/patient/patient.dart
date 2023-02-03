@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:mapd722_patient_clinical_data_app/models/patient.dart';
 import 'package:mapd722_patient_clinical_data_app/pages/patient/add_patient_widget.dart';
 import 'package:mapd722_patient_clinical_data_app/pages/patient/patientlist.dart';
@@ -12,14 +13,29 @@ class PatientHomePage extends StatefulWidget {
   _PatientHomePageState createState() => _PatientHomePageState();
 }
 
-class _PatientHomePageState extends State<PatientHomePage> {
+class _PatientHomePageState extends State<PatientHomePage>
+    with TickerProviderStateMixin {
   final ApiService api = ApiService();
   List<Patient> patientList = [];
 
+  late TabController _controller;
+  int _selectedIndex = 0;
+
   @override
   void initState() {
-    loadList();
     super.initState();
+    print("initState called");
+    loadList(false);
+
+    _controller = TabController(length: 2, vsync: this);
+
+    _controller.addListener(() {
+      setState(() {
+        _selectedIndex = _controller.index;
+      });
+      _controller.index == 0 ? loadList(false) : loadList(true);
+      print("Selected Index: ${_controller.index}");
+    });
   }
 
   @override
@@ -33,51 +49,97 @@ class _PatientHomePageState extends State<PatientHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text("Patient List"),
-      ),
-      body: Center(child: FutureBuilder(
-        // future: loadList(),
-        builder: (context, snapshot) {
-          return patientList.length > 0
-              ? PatientList(patient: patientList)
-              : Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Icon(
-                        Icons.warning,
-                        size: 100.0,
-                      ),
-                      const SizedBox(
-                        height: 10.0,
-                      ),
-                      const Text(
-                        "No data found, tap plus button to add!",
-                        style: TextStyle(
-                          fontSize: 20.0,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            controller: _controller,
+            tabs: [
+              Tab(
+                text: 'All',
+              ),
+              Tab(
+                text: 'Critical',
+              ),
+            ],
+          ),
+          title: const Text("Patient List"),
+        ),
+        body: TabBarView(
+          controller: _controller,
+          children: [
+            Center(child: FutureBuilder(
+              // future: loadList(),
+              builder: (context, snapshot) {
+                return patientList.length > 0
+                    ? PatientList(patient: patientList)
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            const Icon(
+                              Icons.warning,
+                              size: 100.0,
+                            ),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
+                            const Text(
+                              "No data found, tap plus button to add!",
+                              style: TextStyle(
+                                fontSize: 20.0,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                );
-        },
-      )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _navigateToAddScreen(context);
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+                      );
+              },
+            )),
+            Center(child: FutureBuilder(
+              // future: loadList(),
+              builder: (context, snapshot) {
+                return patientList.length > 0
+                    ? PatientList(patient: patientList)
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            const Icon(
+                              Icons.warning,
+                              size: 100.0,
+                            ),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
+                            const Text(
+                              "No data found, tap plus button to add!",
+                              style: TextStyle(
+                                fontSize: 20.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+              },
+            )),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _navigateToAddScreen(context);
+          },
+          tooltip: 'Increment',
+          child: const Icon(Icons.add),
+        ),
+      ),
     );
   }
 
-  Future loadList() {
-    Future<List<Patient>> futurePatient = api.getPatient();
+  Future loadList(onlyCritical) {
+    print("loadList called");
+    patientList = [];
+    Future<List<Patient>> futurePatient = api.getPatient(onlyCritical);
     futurePatient.then((patientList) {
       setState(() {
         this.patientList = patientList;
@@ -90,6 +152,9 @@ class _PatientHomePageState extends State<PatientHomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddPatientWidget()),
-    ).then((value) => {});
+    ).then((value) {
+      print("Then called");
+      _controller.index == 0 ? loadList(false) : _controller.animateTo(0);
+    });
   }
 }
