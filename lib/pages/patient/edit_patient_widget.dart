@@ -253,11 +253,16 @@ class _EditPatientWidgetState extends State<EditPatientWidget> {
                                         ));
 
                                     Navigator.pop(context);
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //       builder: (context) =>
+                                    //           const PatientHomePage()),
+                                    // );
                                   }
                                 },
                                 child: const Text('Save',
                                     style: TextStyle(color: Colors.white)),
-                                // color: Colors.blue,
                               )
                             ],
                           ),

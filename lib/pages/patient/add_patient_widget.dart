@@ -212,10 +212,11 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                             children: <Widget>[
                               ElevatedButton(
                                 // splashColor: Colors.red,
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_addFormKey.currentState!.validate()) {
                                     _addFormKey.currentState!.save();
-                                    api.createPatient(Patient(
+
+                                    var res = await api.createPatient(Patient(
                                       firstName: _firstNameController.text,
                                       lastName: _lastNameController.text,
                                       age: int.parse(_ageController.text),
@@ -224,8 +225,9 @@ class _AddPatientWidgetState extends State<AddPatientWidget> {
                                       mobile: _mobileController.text,
                                       email: _emailController.text,
                                     ));
-
-                                    Navigator.pop(context);
+                                    if (res) {
+                                      Navigator.pop(context);
+                                    }
                                   }
                                 },
                                 child: const Text('Save',

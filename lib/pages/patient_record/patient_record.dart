@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:mapd722_patient_clinical_data_app/models/patient.dart';
 import 'package:mapd722_patient_clinical_data_app/models/patient_record.dart';
 import 'package:mapd722_patient_clinical_data_app/pages/patient_record/add_patient_record_widget.dart';
@@ -7,8 +8,8 @@ import 'package:mapd722_patient_clinical_data_app/pages/patient_record/patient_r
 import 'package:mapd722_patient_clinical_data_app/services/api_service.dart';
 
 class PatientRecordHomePage extends StatefulWidget {
+  final Patient patient;
   const PatientRecordHomePage(this.patient, {super.key});
-  final patient;
 
   @override
   _PatientRecordHomePageState createState() => _PatientRecordHomePageState();
@@ -16,7 +17,6 @@ class PatientRecordHomePage extends StatefulWidget {
 
 class _PatientRecordHomePageState extends State<PatientRecordHomePage> {
   final ApiService api = ApiService();
-
   List<PatientRecord> patientRecordList = [];
 
   @override

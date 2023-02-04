@@ -33,7 +33,7 @@ class ApiService {
     try {
       String u = onlyCritical
           ? "$url/$patientPath?onlyCritical=true"
-          : "$url/$patientPath";
+          : "$url/$patientPath?${DateTime.now()}";
       Response res = await get(Uri.parse(u));
 
       if (res.statusCode == 200) {
@@ -53,7 +53,7 @@ class ApiService {
     }
   }
 
-  Future<Object> createPatient(Patient patient) async {
+  Future<bool> createPatient(Patient patient) async {
     try {
       Map data = {
         'first_name': patient.firstName,
@@ -73,19 +73,19 @@ class ApiService {
       );
       if (response.statusCode == 200) {
         showSnakeBar('Patient Addded succesfully!', true);
-        return {"success": true};
+        return true;
       } else if (response.statusCode == 400) {
         Map<String, dynamic> body = jsonDecode(response.body);
         String message = body["message"] ?? "'Failed: Add Patient";
         showSnakeBar(message, false);
-        return {"success": false};
+        return false;
       } else {
         showSnakeBar('Failed: Add Patient', false);
-        return {"success": false};
+        return false;
       }
     } catch (e) {
       showSnakeBar('Failed: Add Patient', false);
-      return {"success": false};
+      return false;
     }
   }
 
@@ -126,7 +126,7 @@ class ApiService {
       Response res = await delete(Uri.parse('$url/$patientPath/$patientId'));
 
       if (res.statusCode == 200) {
-        showSnakeBar('Patient Deleted Successfully', false);
+        showSnakeBar('Patient Deleted Successfully', true);
       } else {
         throw "Failed to delete a patient.";
       }
@@ -229,7 +229,7 @@ class ApiService {
           Uri.parse('$url/$patientPath/$patientId/$recordPath/$recordId'));
 
       if (res.statusCode == 200) {
-        showSnakeBar('Patient Record Deleted Successfully!', false);
+        showSnakeBar('Patient Record Deleted Successfully!', true);
       } else {
         throw "Failed to delete a patient.";
       }
