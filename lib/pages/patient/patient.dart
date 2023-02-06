@@ -25,18 +25,18 @@ class _PatientHomePageState extends State<PatientHomePage>
   @override
   void initState() {
     super.initState();
-    print("initState called");
+    // print("initState called");
     loadList(false);
 
     _controller = TabController(length: 2, vsync: this);
 
     _controller.addListener(() {
-      print('Controller Listener');
+      // print('Controller Listener');
       setState(() {
         _selectedIndex = _controller.index;
       });
       _controller.index == 0 ? loadList(false) : loadList(true);
-      print("Selected Index: ${_controller.index}");
+      // print("Selected Index: ${_controller.index}");
     });
   }
 
@@ -57,7 +57,7 @@ class _PatientHomePageState extends State<PatientHomePage>
         appBar: AppBar(
           bottom: TabBar(
             controller: _controller,
-            tabs: [
+            tabs: const [
               Tab(
                 text: 'All',
               ),
@@ -131,7 +131,7 @@ class _PatientHomePageState extends State<PatientHomePage>
           onPressed: () {
             _navigateToAddScreen(context);
           },
-          tooltip: 'Increment',
+          tooltip: 'Add',
           child: const Icon(Icons.add),
         ),
       ),
@@ -145,11 +145,7 @@ class _PatientHomePageState extends State<PatientHomePage>
           return Card(
               child: InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DetailWidget(patient[index])),
-              );
+              _navigateToDetailScreen(context, patient[index]);
             },
             child: ListTile(
               leading: const Icon(Icons.person),
@@ -162,16 +158,7 @@ class _PatientHomePageState extends State<PatientHomePage>
                     size: 20.0,
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              EditPatientWidget(patient[index])),
-                    ).then((value) {
-                      print("Back from Edit on list screen");
-                      // Navigator.pop(context);
-                      reloadList();
-                    });
+                    _navigateToEditScreen(context, patient[index]);
                   },
                 ),
                 IconButton(
@@ -195,22 +182,24 @@ class _PatientHomePageState extends State<PatientHomePage>
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Warning!'),
+          title: const Text('Warning!'),
           content: SingleChildScrollView(
             child: ListBody(
-              children: <Widget>[
+              children: const <Widget>[
                 Text('Are you sure want delete this item?'),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Yes'),
+              child: const Text('Yes'),
               onPressed: () {
                 api.deletePatient(patient.id);
-
                 Navigator.of(context).pop();
-                reloadList();
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  // Do something
+                  reloadList();
+                });
               },
             ),
             TextButton(
@@ -226,7 +215,6 @@ class _PatientHomePageState extends State<PatientHomePage>
   }
 
   Future loadList(onlyCritical) {
-    print("loadList called");
     patientList = [];
     Future<List<Patient>> futurePatient = api.getPatient(onlyCritical);
     futurePatient.then((patientList) {
@@ -237,18 +225,47 @@ class _PatientHomePageState extends State<PatientHomePage>
     return futurePatient;
   }
 
+  _navigateToDetailScreen(BuildContext context, Patient patient) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DetailWidget(patient)),
+    ).then((value) {
+      // print("Back from Detail on list screen");
+      Future.delayed(const Duration(milliseconds: 100), () {
+        // Do something
+        reloadList();
+      });
+    });
+  }
+
   _navigateToAddScreen(BuildContext context) async {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddPatientWidget()),
     ).then((value) {
-      print("Then called");
-      _controller.index == 0 ? loadList(false) : _controller.animateTo(0);
+      // print("Back from Add on list screen");
+      Future.delayed(const Duration(milliseconds: 100), () {
+        // Do something
+        reloadList();
+      });
+    });
+  }
+
+  _navigateToEditScreen(BuildContext context, Patient patient) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditPatientWidget(patient)),
+    ).then((value) {
+      // print("Back from Edit on list screen");
+      Future.delayed(const Duration(milliseconds: 100), () {
+        // Do something
+        reloadList();
+      });
     });
   }
 
   reloadList() {
-    print('reloadList called');
+    // print('reloadList called');
     _controller.index == 0 ? loadList(false) : _controller.animateTo(0);
   }
 }

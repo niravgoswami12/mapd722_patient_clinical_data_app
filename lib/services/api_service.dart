@@ -42,7 +42,6 @@ class ApiService {
         List<dynamic> patientData = data["data"];
         List<Patient> patient =
             patientData.map((dynamic item) => Patient.fromJson(item)).toList();
-        // showSnakeBar('Get Patient List Successfully', true);
         return patient;
       } else {
         throw "Failed to load patient list";
@@ -140,8 +139,8 @@ class ApiService {
     String patientId,
   ) async {
     try {
-      Response res =
-          await get(Uri.parse('$url/$patientPath/$patientId/$recordPath'));
+      Response res = await get(Uri.parse(
+          '$url/$patientPath/$patientId/$recordPath?${DateTime.now()}'));
 
       if (res.statusCode == 200) {
         Map<String, dynamic> body = jsonDecode(res.body);
@@ -149,6 +148,8 @@ class ApiService {
         List<PatientRecord> patientRecord = patientRecordData
             .map((dynamic item) => PatientRecord.fromJson(item))
             .toList();
+        // print('getPatientRecord api call');
+        // print(patientRecord);
         return patientRecord;
       } else {
         throw "Failed to load patient record list";

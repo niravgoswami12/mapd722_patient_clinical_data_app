@@ -340,8 +340,9 @@ class _EditPatientRecordWidgetState extends State<EditPatientRecordWidget> {
                                 onPressed: () {
                                   if (_addFormKey.currentState!.validate()) {
                                     _addFormKey.currentState!.save();
-                                    api.createPatientRecord(
+                                    api.updatePatientRecord(
                                         widget.patient.id,
+                                        widget.patientRecord.id,
                                         PatientRecord(
                                             reading: _readingController.text,
                                             dataType: dataType,

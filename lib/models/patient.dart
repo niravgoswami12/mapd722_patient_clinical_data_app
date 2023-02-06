@@ -36,6 +36,6 @@ class Patient {
 
   @override
   String toString() {
-    return 'Trans{id: $id, name: $firstName, age: $age}';
+    return '{id: $id, firstName: $firstName, lastName: $lastName, gender: $gender, age: $age, address: $address, mobile: $mobile, email: $email}';
   }
 }
